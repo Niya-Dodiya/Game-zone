@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card Twister</title>
+  <style>
+    body { background-color: #121212; color: white; text-align: center; font-family: Arial, sans-serif; }
+    h1 { margin-top: 10px; }
+    .timer { font-size: 18px; color: #f0a500; margin: 10px; }
+    .game-container {
+      display: grid;
+      grid-template-columns: repeat(4, 80px);
+      grid-gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .card {
+      width: 80px;
+      height: 80px;
+      background: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.4s;
+      transform-style: preserve-3d;
+    }
+    .card.flipped {
+      background: #0fa;
+      transform: rotateY(180deg);
+      cursor: default;
+    }
+    .message {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>🃏 Card Twister</h1>
+  <div class="timer">⏳ Time Left: <span id="timer">60</span> seconds</div>
+  <div class="game-container" id="game-board"></div>
+  <div class="message" id="message"></div>
+
+  <script>
+    const symbols = ["©", "®", "⌨", "💾", "📁", "🔌", "💻", "🖥"];
+    let cards = [...symbols, ...symbols]; // Duplicate to make pairs
+    let flippedCards = [];
+    let matchedCards = [];
+    let timeLeft = 60;
+    let timer;
+    
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function createBoard() {
+      shuffle(cards);
+      const board = document.getElementById("game-board");
+      board.innerHTML = "";
+      
+      cards.forEach((symbol, index) => {
+        let card = document.createElement("div");
+        card.classList.add("card");
+        card.dataset.symbol = symbol;
+        card.dataset.index = index;
+        card.innerHTML = "?";
+        card.addEventListener("click", flipCard);
+        board.appendChild(card);
+      });
+    }
+
+    function flipCard() {
+      if (flippedCards.length < 2 && !this.classList.contains("flipped")) {
+        this.innerHTML = this.dataset.symbol;
+        this.classList.add("flipped");
+        flippedCards.push(this);
+
+        if (flippedCards.length === 2) {
+          setTimeout(checkMatch, 800);
+        }
+      }
+    }
+
+    function checkMatch() {
+      let [card1, card2] = flippedCards;
+      
+      if (card1.dataset.symbol === card2.dataset.symbol) {
+        matchedCards.push(card1, card2);
+        if (matchedCards.length === cards.length) {
+          clearInterval(timer);
+          document.getElementById("message").innerHTML = "🎉 Congratulations! You won!";
+        }
+      } else {
+        card1.innerHTML = "?";
+        card2.innerHTML = "?";
+        card1.classList.remove("flipped");
+        card2.classList.remove("flipped");
+      }
+      flippedCards = [];
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").textContent = timeLeft;
+        if (timeLeft === 0) {
+          clearInterval(timer);
+          document.getElementById("message").innerHTML = "⏳ Better luck next time!";
+          document.querySelectorAll(".card").forEach(card => card.removeEventListener("click", flipCard));
+        }
+      }, 1000);
+    }
+
+    createBoard();
+    startTimer();
+  </script>
+</body>
+</html>

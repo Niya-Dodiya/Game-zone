@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Hub</title>
+  <style>
+    body { background-color: #121212; color: white; text-align: center; font-family: Arial, sans-serif; }
+    .navbar { display: flex; justify-content: center; background: #222; padding: 10px; }
+    .navbar a { color: white; text-decoration: none; padding: 10px 15px; margin: 5px; background: #333; border-radius: 5px; }
+    .navbar a:hover { background: #555; }
+    .games-container { display: flex; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
+    .game-card {
+      background: #333; padding: 15px; border-radius: 10px; width: 200px;
+      margin: 10px; text-align: center; cursor: pointer;
+    }
+    .game-card img { width: 100%; border-radius: 5px; }
+    .game-card h3 { margin: 10px 0; }
+    .game-card:hover { background: #444; }
+  </style>
+</head>
+<body>
+  <h1>🎮 Game Hub</h1>
+  <div class="navbar">
+    <a href="card-twister.html">Card Twister</a>
+    <a href="tic-tac-toe.html">Tic-Tac-Toe</a>
+    <a href="stone-paper-scissor.html">Stone Paper Scissor</a>
+    <a href="maze-game.html">Maze Game</a>
+    <a href="sudoku.html">Sudoku</a>
+    <a href="snake-game.html">Snake Game</a>
+  </div>
+
+  <div class="games-container">
+    <div class="game-card" onclick="location.href='card-twister.html'">
+      <img src="https://via.placeholder.com/200?text=Card+Twister" alt="Card Twister">
+      <h3>Card Twister</h3>
+    </div>
+    <div class="game-card" onclick="location.href='tic-tac-toe.html'">
+      <img src="https://via.placeholder.com/200?text=Tic-Tac-Toe" alt="Tic-Tac-Toe">
+      <h3>Tic-Tac-Toe</h3>
+    </div>
+    <div class="game-card" onclick="location.href='stone-paper-scissor.html'">
+      <img src="https://via.placeholder.com/200?text=Stone+Paper+Scissor" alt="Stone Paper Scissor">
+      <h3>Stone Paper Scissor</h3>
+    </div>
+    <div class="game-card" onclick="location.href='maze-game.html'">
+      <img src="https://via.placeholder.com/200?text=Maze+Game" alt="Maze Game">
+      <h3>Maze Game</h3>
+    </div>
+    <div class="game-card" onclick="location.href='sudoku.html'">
+      <img src="https://via.placeholder.com/200?text=Sudoku" alt="Sudoku">
+      <h3>Sudoku</h3>
+    </div>
+    <div class="game-card" onclick="location.href='snake-game.html'">
+      <img src="https://via.placeholder.com/200?text=Snake+Game" alt="Snake Game">
+      <h3>Snake Game</h3>
+    </div>
+  </div>
+</body>
+</html>

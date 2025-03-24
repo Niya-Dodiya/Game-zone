@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maze Game (10 Levels)</title>
+  <style>
+    body { background-color: #121212; color: white; text-align: center; font-family: Arial, sans-serif; }
+    canvas { background: white; display: block; margin: 20px auto; border: 2px solid #fff; }
+    .info-box { background: #222; padding: 15px; border-radius: 10px; width: 80%; margin: 10px auto; text-align: left; }
+    .info-box h3 { color: #f0a500; margin: 5px 0; }
+    .info-box p { font-size: 14px; color: #ddd; }
+    .timer { font-size: 18px; color: #f0a500; margin: 10px; }
+    .level { font-size: 20px; color: #0fa; margin: 5px; }
+    .controls { margin-top: 15px; }
+    .controls button {
+      background: #333; border: none; color: white; font-size: 24px;
+      padding: 10px; margin: 5px; border-radius: 5px; cursor: pointer;
+    }
+    .controls button:active { background: #555; }
+    .controls .row { display: flex; justify-content: center; }
+  </style>
+</head>
+<body>
+  <h2>🌀 Bhool-Bhulaiya Maze Game</h2>
+  <div class="level">🏆 Level: <span id="level">1</span> / 10</div>
+  <div class="timer">⏳ Time Left: <span id="timer">60</span> seconds</div>
+
+  <canvas id="mazeCanvas" width="400" height="400"></canvas>
+
+  <div class="controls">
+    <div class="row"><button onclick="movePlayer('ArrowUp')">⬆️</button></div>
+    <div class="row">
+      <button onclick="movePlayer('ArrowLeft')">⬅️</button>
+      <button onclick="movePlayer('ArrowRight')">➡️</button>
+    </div>
+    <div class="row"><button onclick="movePlayer('ArrowDown')">⬇️</button></div>
+  </div>
+
+  <script>
+    let canvas = document.getElementById("mazeCanvas");
+    let ctx = canvas.getContext("2d");
+    let tileSize = 40;
+
+    let player = { x: 40, y: 40, size: tileSize };
+    let goal = { x: 320, y: 320, size: tileSize };
+    let timeLeft = 60;
+    let level = 1;
+    let timer;
+    
+    let timerElement = document.getElementById("timer");
+    let levelElement = document.getElementById("level");
+
+    let mazes = [
+      // Level 1 (Easy)
+      [
+        "1111111111",
+        "1000000001",
+        "1011111101",
+        "1010000101",
+        "1010110101",
+        "1010110101",
+        "1010000101",
+        "1011111101",
+        "1000000001",
+        "1111111111"
+      ],
+      // Level 2 (Harder)
+      [
+        "1111111111",
+        "1000000001",
+        "1010111101",
+        "1010100101",
+        "1011100101",
+        "1000000101",
+        "1011111101",
+        "1000000001",
+        "1011111101",
+        "1111111111"
+      ],
+      // Level 3
+      [
+        "1111111111",
+        "1000000001",
+        "1011111101",
+        "1001000101",
+        "1111010101",
+        "1001010101",
+        "1011010101",
+        "1010010101",
+        "1000000001",
+        "1111111111"
+      ],
+      // Level 4
+      [
+        "1111111111",
+        "1000000001",
+        "1011111101",
+        "1010000101",
+        "1010110101",
+        "1010110101",
+        "1010000101",
+        "1011111101",
+        "1000000001",
+        "1111111111"
+      ],
+      // Level 5
+      [
+        "1111111111",
+        "1000000001",
+        "1010111101",
+        "1010100101",
+        "1011100101",
+        "1000000101",
+        "1011111101",
+        "1000000001",
+        "1011111101",
+        "1111111111"
+      ]
+    ];
+
+    function drawMaze() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let maze = mazes[level - 1];
+
+      for (let row = 0; row < maze.length; row++) {
+        for (let col = 0; col < maze[row].length; col++) {
+          if (maze[row][col] === "1") {
+            ctx.fillStyle = "black";
+            ctx.fillRect(col * tileSize, row * tileSize, tileSize, tileSize);
+          }
+        }
+      }
+      ctx.fillStyle = "red"; ctx.fillRect(player.x, player.y, player.size, player.size);
+      ctx.fillStyle = "green"; ctx.fillRect(goal.x, goal.y, goal.size, goal.size);
+    }
+
+    function isValidMove(newX, newY) {
+      let row = newY / tileSize;
+      let col = newX / tileSize;
+      let maze = mazes[level - 1];
+
+      return (maze[row] && maze[row][col] === "0");
+    }
+
+    function movePlayer(direction) {
+      let newX = player.x, newY = player.y;
+      if (direction === "ArrowRight") newX += tileSize;
+      if (direction === "ArrowLeft") newX -= tileSize;
+      if (direction === "ArrowDown") newY += tileSize;
+      if (direction === "ArrowUp") newY -= tileSize;
+
+      if (isValidMove(newX, newY)) {
+        player.x = newX;
+        player.y = newY;
+        if (player.x === goal.x && player.y === goal.y) {
+          if (level < mazes.length) {
+            level++;
+            levelElement.textContent = level;
+            player.x = 40;
+            player.y = 40;
+            timeLeft = 60;
+            drawMaze();
+          } else {
+            clearInterval(timer);
+            setTimeout(() => { alert("🎉 You completed all levels!"); location.reload(); }, 100);
+          }
+        }
+      }
+      drawMaze();
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        movePlayer(e.key);
+      }
+    });
+
+    function startTimer() {
+      timer = setInterval(() => {
+        timeLeft--;
+        timerElement.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          alert("⏳ Better luck next time! You ran out of time.");
+          location.reload();
+        }
+      }, 1000);
+    }
+
+    startTimer();
+    drawMaze();
+  </script>
+</body>
+</html>

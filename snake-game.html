@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake Game</title>
+  <style>
+    body { background-color: #121212; color: white; text-align: center; font-family: Arial, sans-serif; }
+    h1 { margin-top: 10px; }
+    .game-container { display: flex; flex-direction: column; align-items: center; margin-top: 20px; }
+    canvas { background: #222; border: 2px solid white; }
+    .score { font-size: 18px; margin: 10px; }
+    .message { font-size: 20px; font-weight: bold; color: red; }
+    .controls { margin-top: 10px; }
+    .btn { font-size: 16px; padding: 10px; margin: 5px; background: #333; color: white; border: none; cursor: pointer; }
+    .btn:hover { background: #555; }
+  </style>
+</head>
+<body>
+  <h1>🐍 Snake Game</h1>
+  <div class="score">Score: <span id="score">0</span></div>
+  <div class="game-container">
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div class="controls">
+      <button class="btn" onclick="changeDirection('ArrowUp')">⬆</button><br>
+      <button class="btn" onclick="changeDirection('ArrowLeft')">⬅</button>
+      <button class="btn" onclick="changeDirection('ArrowDown')">⬇</button>
+      <button class="btn" onclick="changeDirection('ArrowRight')">➡</button>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="startGame()">New Game</button>
+      <button class="btn" onclick="resumeGame()">Resume</button>
+      <button class="btn" onclick="abortGame()">Abort</button>
+    </div>
+  </div>
+  <div class="message" id="message"></div>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const box = 20;
+    let snake, direction, food, score, gameInterval, gamePaused;
+
+    function getRandomPosition() {
+      return Math.floor(Math.random() * (canvas.width / box)) * box;
+    }
+
+    function startGame() {
+      snake = [{ x: 200, y: 200 }];
+      direction = "ArrowRight";
+      food = { x: getRandomPosition(), y: getRandomPosition() };
+      score = 0;
+      document.getElementById("score").innerText = score;
+      document.getElementById("message").innerText = "";
+      gamePaused = false;
+      clearInterval(gameInterval);
+      gameInterval = setInterval(updateGame, 150);
+    }
+
+    function drawSnake() {
+      ctx.fillStyle = "lime";
+      snake.forEach(segment => ctx.fillRect(segment.x, segment.y, box, box));
+    }
+
+    function drawFood() {
+      ctx.fillStyle = "red";
+      ctx.fillRect(food.x, food.y, box, box);
+    }
+
+    function moveSnake() {
+      if (gamePaused) return;
+      let head = { ...snake[0] };
+
+      if (direction === "ArrowUp") head.y -= box;
+      if (direction === "ArrowDown") head.y += box;
+      if (direction === "ArrowLeft") head.x -= box;
+      if (direction === "ArrowRight") head.x += box;
+
+      if (head.x < 0 || head.y < 0 || head.x >= canvas.width || head.y >= canvas.height || 
+          snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+        clearInterval(gameInterval);
+        document.getElementById("message").innerText = "❌ Game Over!";
+        return;
+      }
+
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) {
+        score++;
+        document.getElementById("score").innerText = score;
+        food = { x: getRandomPosition(), y: getRandomPosition() };
+      } else {
+        snake.pop();
+      }
+    }
+
+    function updateGame() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawFood();
+      drawSnake();
+      moveSnake();
+    }
+
+    function changeDirection(newDirection) {
+      if (!gamePaused && 
+          (newDirection === "ArrowUp" && direction !== "ArrowDown") ||
+          (newDirection === "ArrowDown" && direction !== "ArrowUp") ||
+          (newDirection === "ArrowLeft" && direction !== "ArrowRight") ||
+          (newDirection === "ArrowRight" && direction !== "ArrowLeft")) {
+        direction = newDirection;
+      }
+    }
+
+    function resumeGame() {
+      if (gamePaused) {
+        gamePaused = false;
+        gameInterval = setInterval(updateGame, 150);
+      }
+    }
+
+    function abortGame() {
+      clearInterval(gameInterval);
+      document.getElementById("message").innerText = "⛔ Game Aborted!";
+    }
+
+    document.addEventListener("keydown", (event) => changeDirection(event.key));
+    startGame(); // Start game on load
+  </script>
+</body>
+</html>
